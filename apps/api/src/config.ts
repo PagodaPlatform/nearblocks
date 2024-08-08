@@ -5,6 +5,7 @@ import { Network } from 'nb-types';
 import { Config } from '#types/types';
 
 const env = cleanEnv(process.env, {
+  API_ACCESS_KEY: str(),
   DATABASE_CA: str({ default: '' }),
   DATABASE_CERT: str({ default: '' }),
   DATABASE_KEY: str({ default: '' }),
@@ -13,6 +14,11 @@ const env = cleanEnv(process.env, {
   NETWORK: str({
     choices: [Network.MAINNET, Network.TESTNET],
   }),
+  RATELIMITER_REDIS_PASSWORD: str({ default: '' }),
+  RATELIMITER_REDIS_SENTINEL_NAME: str({ default: '' }),
+  RATELIMITER_REDIS_SENTINEL_PASSWORD: str({ default: '' }),
+  RATELIMITER_REDIS_SENTINEL_URLS: str({ default: '' }),
+  RATELIMITER_REDIS_URL: url({ default: '' }),
   REDIS_PASSWORD: str({ default: '' }),
   REDIS_SENTINEL_NAME: str({ default: '' }),
   REDIS_SENTINEL_PASSWORD: str({ default: '' }),
@@ -25,6 +31,7 @@ const env = cleanEnv(process.env, {
 });
 
 const config: Config = {
+  apiAccessKey: env.API_ACCESS_KEY,
   dbCa: env.DATABASE_CA,
   dbCert: env.DATABASE_CERT,
   dbKey: env.DATABASE_KEY,
@@ -34,6 +41,11 @@ const config: Config = {
   maxQueryRows: 5000,
   network: env.NETWORK,
   port: 3001,
+  ratelimiterRedisPassword: env.RATELIMITER_REDIS_PASSWORD,
+  ratelimiterRedisSentinelName: env.RATELIMITER_REDIS_SENTINEL_NAME,
+  ratelimiterRedisSentinelPassword: env.RATELIMITER_REDIS_SENTINEL_PASSWORD,
+  ratelimiterRedisSentinelUrls: env.RATELIMITER_REDIS_SENTINEL_URLS,
+  ratelimiterRedisUrl: env.RATELIMITER_REDIS_URL,
   redisPassword: env.REDIS_PASSWORD,
   redisSentinelName: env.REDIS_SENTINEL_NAME,
   redisSentinelPassword: env.REDIS_SENTINEL_PASSWORD,

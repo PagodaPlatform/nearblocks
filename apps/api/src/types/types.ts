@@ -13,6 +13,7 @@ export interface RequestValidators<T> extends Request {
 export type RequestValidator<T> = Required<RequestValidators<T>>;
 
 export type Config = {
+  apiAccessKey: string;
   dbCa: string;
   dbCert: string;
   dbKey: string;
@@ -22,6 +23,11 @@ export type Config = {
   maxQueryRows: number;
   network: string;
   port: number;
+  ratelimiterRedisPassword: string;
+  ratelimiterRedisSentinelName: string;
+  ratelimiterRedisSentinelPassword: string;
+  ratelimiterRedisSentinelUrls: string;
+  ratelimiterRedisUrl: string;
   redisPassword: string;
   redisSentinelName: string;
   redisSentinelPassword: string;

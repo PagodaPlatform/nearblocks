@@ -17,13 +17,24 @@ interface LogoProps {
 }
 const Container = styled.div`
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Lato:wght@400;700&display=swap');
+
+  @media (min-width: 640px) {
+    padding: 72px;
+  }
 `;
 const InnerContainer = styled.div`
   max-width: 1224px;
   background-color: rgb(255, 255, 255);
   min-height: 260px;
+
   @media (min-width: 640px) {
     margin: 72px auto;
+    padding: 24px;
+  }
+
+  @media (max-width: 640px) {
+    margin-top: 90px;
+    margin-bottom: 10rem;
   }
 `;
 
@@ -42,7 +53,7 @@ const LinkContainer = styled.div`
 `;
 const Background = styled.div`
   width: 100%;
-  min-height: 100vh;
+  height: 84vh;
   display: flex;
   align-items: center;
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAGeSURBVHgB7doxTisxEAbgeY/mvQro6NiSDo6QkpJbcA2OwjWooKQMJ2DpKENJBV7FEYoBeQSIZr9PGk2cItWvsdfZnSBjKHVf6rnUbdD1N8g4K7VX6jhIEaycofaTIEWwcoam0yFYOYe179WiQ7Byhk8+8wnB6munlHNWgmD1tUGyFSYIVl8bJFcOCYLV106s/aBrJ2hNE+qo1GmpRanz2J5aB6X+x/oQv/l+FWz5E/O1iHU4pom0W/u0/uoZahnrgN2VGuv6Jpidl1+o2T5BznkrfKj9MdZT6l9836r+3k2pq1KXMVNz3gpbU7hOmj49AQ7x/lJ0WWsK5xhv2+AYkHQR29vbddDluqFvbNZPQZdg9S07az4gWH3tHZVgJQhW3xjb4XIZyo+Z3nffHN79CZ1gYuXc1b4KEytFsHLGptMhWDlj7Q9BimDlbJ4Ex4AftggHdwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIpXoUVLSWulnzoAAAAASUVORK5CYII=);
@@ -108,6 +119,7 @@ const H6 = styled.h6`
 const NearExplorerButton = styled.a<{
   isSelected?: string;
   isLinkActive?: boolean;
+  isMobileFirst?: boolean;
 }>`
   background-color: #ffffff;
   border: 1px solid rgb(27, 27, 24);
@@ -115,16 +127,27 @@ const NearExplorerButton = styled.a<{
   border-radius: 8px;
   padding: 32px;
   flex-direction: column;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
   .logo {
     height: 45px;
     width: auto;
   }
+
   transition: all 0.4s ease 0s;
   cursor: pointer;
   outline: none;
+  order: ${(props: any) => (props.isMobileFirst ? '0' : '1')};
+
   &:hover {
     background-color: rgb(227, 227, 224);
     text-decoration: none;
+  }
+
+  @media (min-width: 769px) {
+    order: 0;
   }
 `;
 
@@ -168,14 +191,7 @@ const ExplorerHead = styled.h3`
   padding: 26px 0px 16px;
   color: #000;
 `;
-const ExplorerText = styled.p`
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 450;
-  line-height: 150%;
-  letter-spacing: 0.14px;
-  color: #000;
-`;
+
 const LogoContainer = styled.div`
   height: 45px;
   width: auto;
@@ -222,6 +238,9 @@ const InnerSection = styled.div`
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  @media (max-width: 640px) {
+    padding: 6px;
+  }
 `;
 
 export default function (props: Props) {
@@ -471,71 +490,6 @@ export default function (props: Props) {
                 <LinkContainer>
                   <NearExplorerButton
                     href={
-                      !hasLinkPeakspeak
-                        ? (pikespeakHref && pikespeakHref) ||
-                          (config.pikespeakai ?? '') + path
-                        : config.pikespeakai ?? ''
-                    }
-                    isSelected={
-                      selected === 'pikespeakai'
-                        ? !linkPikespeakai(path)
-                          ? false
-                          : true
-                        : false
-                    }
-                    onClick={() => {
-                      onSelect('pikespeakai');
-                    }}
-                    isLinkActive={
-                      !linkPikespeakai(path) || config.pikespeakai === null
-                    }
-                  >
-                    <ImageTab
-                      width="auto"
-                      height="45px"
-                      src={
-                        'https://explorer.near.org/images/pikespeak_logo.png'
-                      }
-                      alt="Pikespeak"
-                    ></ImageTab>
-                    <ExplorerHead>Pikespeak</ExplorerHead>
-                    <ExplorerText>
-                      Data & Analytics on the NEAR Protocol.
-                    </ExplorerText>
-                  </NearExplorerButton>
-                  <NearExplorerButton
-                    href={
-                      !hasLinkNearblocks
-                        ? href || config.nearblocks + path
-                        : config.nearblocks
-                    }
-                    isSelected={
-                      selected === 'nearblocks'
-                        ? !linkNearblocks(path)
-                          ? false
-                          : true
-                        : false
-                    }
-                    isLinkActive={!linkNearblocks(path)}
-                    onClick={() => {
-                      onSelect('nearblocks');
-                    }}
-                  >
-                    <Tag>Recommended</Tag>
-                    <ImageTab
-                      height="45px"
-                      width="auto"
-                      src={'https://nearblocks.io/images/nb-black-on-bos.svg'}
-                      alt="Nearblocks"
-                    ></ImageTab>
-                    <ExplorerHead>Nearblocks</ExplorerHead>
-                    <ExplorerText>
-                      Leading user friendly Blockchain Explorer and Analytics
-                      Platform for Near Protocol.
-                    </ExplorerText>
-                  </NearExplorerButton>
-                  <NearExplorerButton
-                    href={
                       !hasLinkNearblocksLite
                         ? (nearblocksLiteHref && nearblocksLiteHref) ||
                           (config.nearblocksLite ?? '') + path
@@ -555,14 +509,72 @@ export default function (props: Props) {
                     onClick={() => {
                       onSelect('nearblockslite');
                     }}
+                    isMobileFirst={false}
                   >
                     <LogoContainer>
                       <Logo className="logo" />
                     </LogoContainer>
                     <ExplorerHead>Nearblocks Lite</ExplorerHead>
-                    <ExplorerText>
-                      RPC Based explorer built on BOS.
-                    </ExplorerText>
+                  </NearExplorerButton>
+                  <NearExplorerButton
+                    href={
+                      !hasLinkNearblocks
+                        ? href || config.nearblocks + path
+                        : config.nearblocks
+                    }
+                    isSelected={
+                      selected === 'nearblocks'
+                        ? !linkNearblocks(path)
+                          ? false
+                          : true
+                        : false
+                    }
+                    isLinkActive={!linkNearblocks(path)}
+                    onClick={() => {
+                      onSelect('nearblocks');
+                    }}
+                    isMobileFirst={true}
+                  >
+                    <Tag>Recommended</Tag>
+                    <ImageTab
+                      height="45px"
+                      width="auto"
+                      src={'https://nearblocks.io/images/nb-black-on-bos.svg'}
+                      alt="Nearblocks"
+                    ></ImageTab>
+                    <ExplorerHead>Nearblocks</ExplorerHead>
+                  </NearExplorerButton>
+                  <NearExplorerButton
+                    href={
+                      !hasLinkPeakspeak
+                        ? (pikespeakHref && pikespeakHref) ||
+                          (config.pikespeakai ?? '') + path
+                        : config.pikespeakai ?? ''
+                    }
+                    isSelected={
+                      selected === 'pikespeakai'
+                        ? !linkPikespeakai(path)
+                          ? false
+                          : true
+                        : false
+                    }
+                    onClick={() => {
+                      onSelect('pikespeakai');
+                    }}
+                    isLinkActive={
+                      !linkPikespeakai(path) || config.pikespeakai === null
+                    }
+                    isMobileFirst={false}
+                  >
+                    <ImageTab
+                      width="auto"
+                      height="45px"
+                      src={
+                        'https://explorer.near.org/images/pikespeak_logo.png'
+                      }
+                      alt="Pikespeak"
+                    ></ImageTab>
+                    <ExplorerHead>Pikespeak</ExplorerHead>
                   </NearExplorerButton>
                 </LinkContainer>
               </InnerSection>

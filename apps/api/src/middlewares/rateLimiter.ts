@@ -1,18 +1,30 @@
 import { NextFunction, Request, Response } from 'express';
 import { RateLimiterRedis, RateLimiterUnion } from 'rate-limiter-flexible';
 
+import config from '#config';
 import catchAsync from '#libs/async';
 import dayjs from '#libs/dayjs';
 import { userSql } from '#libs/postgres';
-import { userRedisClient } from '#libs/redis';
+import { ratelimiterRedisClient } from '#libs/ratelimiterRedis';
 import { SubscriptionStatus } from '#types/enums';
 import { Plan, User } from '#types/types';
+
+const CUSTOM_RATE_LIMIT_MESSAGE =
+  'You have exceeded your API request limit. Please try again later or upgrade your plan for higher limits at https://nearblocks.io/apis.';
 
 const rateLimiter = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const id = (req.user as User)?.id;
     const keyId = (req.user as User)?.key_id;
     const date = dayjs.utc().toISOString();
+
+    // Bypass rate limiting for the near token
+    const authHeader = req.headers.authorization || '';
+    const token = authHeader.replace('Bearer ', '');
+
+    if (token === config.apiAccessKey) {
+      return next();
+    }
 
     if (!id) {
       return await useFreePlan(res, next, req.ip!);
@@ -59,7 +71,7 @@ const rateLimiter = catchAsync(
       }
       return next();
     } catch (error) {
-      return res.status(429).json({ message: 'Too Many Requests' });
+      return res.status(429).json({ message: CUSTOM_RATE_LIMIT_MESSAGE });
     }
   },
 );
@@ -73,7 +85,7 @@ const useFreePlan = async (
   const freePlan = await getFreePlan();
 
   if (!freePlan) {
-    return res.status(429).json({ message: 'Too Many Requests' });
+    return res.status(429).json({ message: CUSTOM_RATE_LIMIT_MESSAGE });
   }
 
   const rateLimit = rateLimiterUnion(freePlan);
@@ -87,7 +99,7 @@ const useFreePlan = async (
 
     return next();
   } catch (error) {
-    return res.status(429).json({ message: 'Too Many Requests' });
+    return res.status(429).json({ message: CUSTOM_RATE_LIMIT_MESSAGE });
   }
 };
 
@@ -113,19 +125,19 @@ const rateLimiterUnion = (plan: Plan) => {
     duration: 60, // 1 min
     keyPrefix: `plan_${plan.id}_minute`,
     points: pointsMinute,
-    storeClient: userRedisClient,
+    storeClient: ratelimiterRedisClient,
   });
   const dayRateLimiter = new RateLimiterRedis({
     duration: 60 * 60 * 24, // 1 day
     keyPrefix: `plan_${plan.id}_day`,
     points: pointsDay,
-    storeClient: userRedisClient,
+    storeClient: ratelimiterRedisClient,
   });
   const monthRateLimiter = new RateLimiterRedis({
     duration: 60 * 60 * 24 * 30, // 30 days
     keyPrefix: `plan_${plan.id}_month`,
     points: pointsMonth,
-    storeClient: userRedisClient,
+    storeClient: ratelimiterRedisClient,
   });
 
   return new RateLimiterUnion(
