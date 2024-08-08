@@ -9,7 +9,7 @@ services:
         BUILDPLATFORM: linux/arm64
         NEXT_PUBLIC_NETWORK_ID: testnet
         NEXT_PUBLIC_BOS_NETWORK: mainnet
-        NEXT_PUBLIC_ACCOUNT_ID: mr8ce_is.near
+      NEXT_PUBLIC_ACCOUNT_ID: nearblocks.testnet
 
     restart: always
     ports:
@@ -18,4 +18,4 @@ services:
       PORT: 3000
       NEXT_PUBLIC_NETWORK_ID: testnet
       NEXT_PUBLIC_BOS_NETWORK: mainnet
-      NEXT_PUBLIC_ACCOUNT_ID: mr8ce_is.near
+      NEXT_PUBLIC_ACCOUNT_ID: nearblocks.testnet
